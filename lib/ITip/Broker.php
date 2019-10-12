@@ -522,6 +522,7 @@ class Broker
                 $event = $icalMsg->add('VEVENT', [
                     'UID' => $message->uid,
                     'SEQUENCE' => $message->sequence,
+                    'DTSTAMP' => gmdate('Ymd\\THis\\Z'),
                 ]);
                 if (isset($calendar->VEVENT->SUMMARY)) {
                     $event->add('SUMMARY', $calendar->VEVENT->SUMMARY->getValue());
@@ -607,6 +608,7 @@ class Broker
                         }
                     }
 
+                    $currentEvent->DTSTAMP = gmdate('Ymd\\THis\\Z');
                     $icalMsg->add($currentEvent);
                 }
             }
@@ -847,7 +849,7 @@ class Broker
                     $organizer = $vevent->ORGANIZER->getNormalizedValue();
                     $organizerName = isset($vevent->ORGANIZER['CN']) ? $vevent->ORGANIZER['CN'] : null;
                 } else {
-                    if ($organizer !== $vevent->ORGANIZER->getNormalizedValue()) {
+                    if (strtoupper($organizer) !== strtoupper($vevent->ORGANIZER->getNormalizedValue())) {
                         throw new SameOrganizerForAllComponentsException('Every instance of the event must have the same organizer.');
                     }
                 }

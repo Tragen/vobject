@@ -38,7 +38,7 @@ class VCard implements SplitterInterface
     /**
      * Constructor.
      *
-     * The splitter should receive an readable file stream as it's input.
+     * The splitter should receive an readable file stream as its input.
      *
      * @param resource $input
      * @param int      $options parser options, see the OPTIONS constants
@@ -55,7 +55,7 @@ class VCard implements SplitterInterface
      *
      * When the end is reached, null will be returned.
      *
-     * @return Sabre\VObject\Component|null
+     * @return \Sabre\VObject\Component|null
      */
     public function getNext()
     {

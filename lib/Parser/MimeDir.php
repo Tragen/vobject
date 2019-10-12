@@ -7,6 +7,7 @@ use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Component\VCard;
 use Sabre\VObject\Document;
 use Sabre\VObject\EofException;
+use Sabre\VObject\Node;
 use Sabre\VObject\ParseException;
 
 /**
@@ -72,7 +73,7 @@ class MimeDir extends Parser
      * @param string|resource|null $input
      * @param int                  $options
      *
-     * @return Sabre\VObject\Document
+     * @return \Sabre\VObject\Document
      */
     public function parse($input = null, $options = 0)
     {
@@ -194,6 +195,9 @@ class MimeDir extends Parser
     {
         // Start of a new component
         if ('BEGIN:' === strtoupper(substr($line, 0, 6))) {
+            if (substr($line, 6) === $this->root->name) {
+                throw new ParseException('Invalid MimeDir file. Unexpected component: "'.$line.'" in document type '.$this->root->name);
+            }
             $component = $this->root->createComponent(substr($line, 6), [], false);
 
             while (true) {
@@ -232,7 +236,7 @@ class MimeDir extends Parser
      *
      * If that was not the case, we store it here.
      *
-     * @var null|string
+     * @var string|null
      */
     protected $lineBuffer;
 
@@ -414,7 +418,7 @@ class MimeDir extends Parser
         }
 
         // vCard 2.1 states that parameters may appear without a name, and only
-        // a value. We can deduce the value based on it's name.
+        // a value. We can deduce the value based on its name.
         //
         // Our parser will get those as parameters without a value instead, so
         // we're filtering these parameters out first.
@@ -654,7 +658,7 @@ class MimeDir extends Parser
         // missing a whitespace. So if 'forgiving' is turned on, we will take
         // those as well.
         if ($this->options & self::OPTION_FORGIVING) {
-            while ('=' === substr($value, -1)) {
+            while ('=' === substr($value, -1) && $this->lineBuffer) {
                 // Reading the line
                 $this->readLine();
                 // Grabbing the raw form
